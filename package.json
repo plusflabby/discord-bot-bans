@@ -1,0 +1,19 @@
+{
+  "name": "discord-bot-bans",
+  "version": "1.0.0",
+  "description": "Discord bot intended for reviewing banned accounts",
+  "scripts": {
+    "start": "node src/run.js",
+    "prod": "node src/run.js -err",
+    "cmds": "node src/deploy-commands.js"
+  },
+  "author": "flabby",
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
+    "mongodb": "^6.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.49.0"
+  }
+}
