@@ -10,6 +10,8 @@ if (process.argv.indexOf('-err')) debugLogs = true;
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { discord_join } = require('./axios-post');
+const { getChannel } = require('./mongo');
 const { token } = process.env.DISCORD_TOKEN;
 
 // Create a new client instance
@@ -73,9 +75,37 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 client.on(Events.GuildMemberAdd, member => {
-	if (debugLogs) console.log('New member', member.id);
+	if (debugLogs) console.log('+ member', member.id);
+	discord_join(member.id)
+		.then(data => {
+			getChannel(member.guild.id)
+				.then(async channelId => {
+					// No channelId set so no messages
+					if (typeof channelId != 'string') return;
+					const channel = await client.channels.fetch (channelId);
+					if (!channel) return;
+					// Send message in discord channe;
+					channel.send({ content: `<@${member.id}> just joined discord and is ${data[0] ? '**banned**' : 'not-banned'}${data[0] ? '\n```' + setUpAltAccounts(data[1]) + '```' : ''}` });
+				});
+		});
 });
 
+function setUpAltAccounts(arrOfAccounts) {
+	const len = arrOfAccounts.length;
+	let returnString = '';
+	if (len > 0) {
+		for (let index = 0; index < arrOfAccounts.length; index++) {
+			const account = arrOfAccounts[index];
+
+			returnString = returnString + '\n' + (index + 1) + '.' + account.name;
+		}
+		return returnString;
+	}
+	else {
+		return '1. No alt accounts found';
+	}
+}
+
 client.on(Events.GuildMemberRemove, member => {
-	if (debugLogs) console.log('Lost member', member.id);
+	if (debugLogs) console.log('- member', member.id);
 });
