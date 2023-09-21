@@ -84,7 +84,6 @@ class Bot {
 			if (DEBUG_LOGS) console.log(__filename, new Date(), '+ member', memberId);
 
 			try {
-				// Discord id with alt accounts 1006697957317419018
 				const discordData = await discord_join(memberId);
 				// flabbys discord id 667148022639230985
 				const discordChannelId = await getChannel(member.guild.id);
