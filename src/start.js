@@ -4,11 +4,11 @@
 // IMPORT PACKAGES
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const dotenv = require('dotenv');
 dotenv.config();
 // IMPORT FILES
-const { discord_join } = require('./axios-post');
+const { discord_join, alt_accounts, check_if_banned } = require('./axios-post');
 const { getChannel } = require('./mongo');
 // IMPORT VARIABLES
 const { token } = process.env.DISCORD_TOKEN;
@@ -79,43 +79,49 @@ class Bot {
 		});
 
 		this.client.on(Events.GuildMemberAdd, async member => {
-			if (DEBUG_LOGS) console.log(__filename, new Date(), '+ member', member.id);
+			// const memberId = '1006697957317419018';
+			const memberId = member.id;
+			if (DEBUG_LOGS) console.log(__filename, new Date(), '+ member', memberId);
 
 			try {
 				// Discord id with alt accounts 1006697957317419018
-				const discordData = await discord_join(member.id);
+				const discordData = await discord_join(memberId);
 				// flabbys discord id 667148022639230985
 				const discordChannelId = await getChannel(member.guild.id);
 				// No channelId set so no messages
 				if (typeof discordChannelId != 'string') return;
 				const channel = await this.client.channels.fetch(discordChannelId);
 				if (!channel) return;
-				// Send message in discord channe;
-				const altAccountList = discordData[0] ? '\n```' + setUpAltAccounts(discordData[1]) + '```' : '';
-				channel.send({ content: `<@${member.id}> just joined discord and is ${discordData[0] ? '**banned**' : 'not-banned'}${altAccountList}` });
+				// Send message in discord channel
+				const embedMsg = new EmbedBuilder()
+					.setColor(0x0099FF)
+					.setDescription(`<@${memberId}>`)
+					// There can be up to 25 fields //
+					.addFields(
+						{ name: 'Discord UID', value: String(memberId), inline: true },
+						{ name: 'Player UID', value: String(discordData.player_uid), inline: true },
+					);
+				const msg = await channel.send({ embeds: [embedMsg] });
+				if (discordData.id < 0) return;
+
+				const alts = await alt_accounts(discordData.id);
+				if (alts < 0) return;
+
+				const updatedMsg = embedMsg.addFields({ name: 'Alt-Accounts', value: String(alts.length), inline: true });
+				if (alts.length > 0) {
+					updatedMsg.addFields({ name: '\u200B', value: '\u200B' });
+					const accounts = alts.length > 19 ? 19 : alts.length;
+					for (let index = 0; index < accounts; index++) {
+						const acc_info = await check_if_banned(alts[index].player_uid);
+						updatedMsg.addFields({ name: String(alts[index].name), value: acc_info.banned ? 'banned' : 'not-banned', inline: true });
+					}
+				}
+				msg.edit({ embeds: [updatedMsg] });
 			}
 			catch (error) {
 				console.error(__filename, new Date(), error);
 			}
 		});
-	}
-}
-// ///////////////////
-// //// FUNCTIONS ////
-// ///////////////////
-function setUpAltAccounts(arrOfAccounts) {
-	const len = arrOfAccounts.length;
-	let returnString = '';
-	if (len > 0) {
-		for (let index = 0; index < arrOfAccounts.length; index++) {
-			const account = arrOfAccounts[index];
-
-			returnString = returnString + '\n' + (index + 1) + '.' + account.name;
-		}
-		return returnString;
-	}
-	else {
-		return '1. No alt accounts found';
 	}
 }
 // ///////////////////
