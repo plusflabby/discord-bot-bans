@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Discord bot intended for reviewing banned accounts",
   "scripts": {
-    "start": "node src/run.js",
-    "prod": "node src/run.js -err",
+    "start": "node src/entry.js",
+    "prod": "node src/entry.js -err",
     "cmds": "node src/deploy-commands.js"
   },
   "author": "flabby",

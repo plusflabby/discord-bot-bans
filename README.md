@@ -10,3 +10,9 @@
 ## MongoDB
 - `_id` = Discord server's id
 - `channelId`
+
+## .env variables
+- DISCORD_TOKEN=
+- MONGODB_URL=
+- clientId=
+- apikey=

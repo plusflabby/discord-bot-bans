@@ -1,76 +1,74 @@
 const { MongoClient, MongoServerError } = require('mongodb');
 
-// Database Name
-const dbName = 'flabbys_discord_bot';
-// Connection URL
-const url = process.env.MONGODB_URL;
+class MONGO {
+	#databaseName = 'flabbys_discord_bot';
+	#client;
+	#collection;
+	#connected = false;
 
-async function main(client, discordId, channelId) {
-	await client.connect();
-	// console.log('Connected successfully to server');
-	const db = client.db(dbName);
-
-	const collection = db.collection('channels');
-
-	try {
-		await collection.insertOne({ _id: discordId, channelId: String(channelId) });
+	constructor() {
+		this.client = new MongoClient(process.env.MONGODB_URL);
+		this.collection = this.client.db(this.databaseName).collection('channels');
 	}
-	catch (error) {
-		if (error instanceof MongoServerError) {
-			// DUplicate error code so update exisiting record
-			if (error.code == 11000) {
-				await collection.updateOne({ _id: discordId }, { $set: { channelId: channelId } });
-				return 'done.';
-			}
-			else {
-				console.log(`Error worth logging: ${error}`);
-			}
+
+	async connect() {
+		if (this.connected) return true;
+		await this.client.connect();
+		return true;
+	}
+
+	async find(guildId) {
+		await this.connect();
+		try {
+			const filteredDocs = await this.collection.find({ _id: guildId }).toArray();
+			if (filteredDocs.length < 1) return 'empty arr';
+			return filteredDocs[0].channelId;
 		}
-		throw error;
-	}
-
-	return 'done.';
-}
-
-async function secondary(client, guildId) {
-	await client.connect();
-	const db = client.db(dbName);
-	const collection = db.collection('channels');
-
-	try {
-		const filteredDocs = await collection.find({ _id: guildId }).toArray();
-		if (filteredDocs.length < 1) return 'empty arr';
-		return filteredDocs[0].channelId;
-	}
-	catch (error) {
-		if (error instanceof MongoServerError) {
-			console.log(`Error worth logging: ${error}`);
+		catch (error) {
+			if (error instanceof MongoServerError) {
+				console.log(__filename, new Date(), `<MONGO> Error worth logging: ${error}`);
+			}
+			return error;
 		}
-		throw error;
+	}
+	async updateOne(discordId, channelId) {
+		await this.connect();
+		try {
+			await this.collection.insertOne({ _id: discordId, channelId: String(channelId) });
+			return Promise.resolve();
+		}
+		catch (error) {
+			if (error instanceof MongoServerError) {
+				// Duplicate code so update exisiting record
+				if (error.code == 11000) {
+					await this.collection.updateOne({ _id: discordId }, { $set: { channelId: channelId } });
+					return Promise.resolve();
+				}
+				else {
+					console.log(__filename, new Date(), `Error worth logging: ${error}`);
+				}
+			}
+			return error;
+		}
+	}
+
+	close() {
+		this.client.close();
 	}
 }
 
 module.exports = {
 	setChannel: async (discordId, channelId) => {
-		const client = new MongoClient(url);
+		const mongo = new MONGO();
+		await mongo.updateOne(discordId, channelId);
+		mongo.close();
+		return;
 
-		if (process.argv.indexOf('-err')) console.log('set-channel requested with', discordId, channelId);
-
-		main(client, discordId, channelId)
-			.catch(console.error)
-			.finally(() => client.close());
 	},
 	getChannel: async guildId => {
-		const client = new MongoClient(url);
-
-		try {
-			const att = await secondary(client, guildId);
-			client.close();
-			return att;
-		}
-		catch (error) {
-			console.log(error);
-			client.close();
-		}
+		const mongo = new MONGO();
+		const channelId = await mongo.find(guildId);
+		mongo.close();
+		return channelId;
 	},
 };

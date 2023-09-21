@@ -32,7 +32,7 @@ module.exports = {
 		const first_request = await postReq([{ type:'discord', value: dId }]);
 		if (typeof first_request.data.matches[0] == 'undefined') return [false, 'No discord matches'];
 		// Found discord match so moving on, search for player accounts
-		const second_request = await postReq([{ type:'dynamic', value: first_request.data.matches[0].player_uid }]);
+		const second_request = await postReq([{ type:'player', value: first_request.data.matches[0].id }]);
 		if (typeof second_request.data.matches[0] == 'undefined') return [false, 'No player matches'];
 		const player_matches = second_request.data.matches;
 		for (let i = 0; i < player_matches.length; i++) {
@@ -44,6 +44,7 @@ module.exports = {
 			}
 			// eslint-disable-next-line no-empty
 			catch (error) {
+				console.log(__filename, new Date(), error);
 				continue;
 			}
 		}
