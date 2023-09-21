@@ -12,7 +12,7 @@ const { discord_join, alt_accounts, check_if_banned } = require('./axios-post');
 const { getChannel } = require('./mongo');
 // IMPORT VARIABLES
 const token = process.env.DISCORD_TOKEN;
-const DEBUG_LOGS = process.argv.indexOf('-err') || false;
+const DEBUG_LOGS = process.argv.indexOf('-err') > -1;
 // ///////////////////
 // ////// CLASS //////
 // ///////////////////
@@ -79,48 +79,49 @@ class Bot {
 		});
 
 		this.client.on(Events.GuildMemberAdd, async member => {
-			// const memberId = '1006697957317419018';
-			const memberId = member.id;
-			if (DEBUG_LOGS) console.log(__filename, new Date(), '+ member', memberId);
-
-			try {
-				const discordData = await discord_join(memberId);
-				// flabbys discord id 667148022639230985
-				const discordChannelId = await getChannel(member.guild.id);
-				// No channelId set so no messages
-				if (typeof discordChannelId != 'string') return;
-				const channel = await this.client.channels.fetch(discordChannelId);
-				if (!channel) return;
-				// Send message in discord channel
-				const embedMsg = new EmbedBuilder()
-					.setColor(0x0099FF)
-					.setDescription(`<@${memberId}>`)
-					// There can be up to 25 fields //
-					.addFields(
-						{ name: 'Discord UID', value: String(memberId), inline: true },
-						{ name: 'Player UID', value: String(discordData.player_uid), inline: true },
-					);
-				const msg = await channel.send({ embeds: [embedMsg] });
-				if (discordData.id < 0) return;
-
-				const alts = await alt_accounts(discordData.id);
-				if (alts < 0) return;
-
-				const updatedMsg = embedMsg.addFields({ name: 'Alt-Accounts', value: String(alts.length), inline: true });
-				if (alts.length > 0) {
-					updatedMsg.addFields({ name: '\u200B', value: '\u200B' });
-					const accounts = alts.length > 19 ? 19 : alts.length;
-					for (let index = 0; index < accounts; index++) {
-						const acc_info = await check_if_banned(alts[index].player_uid);
-						updatedMsg.addFields({ name: String(alts[index].name), value: acc_info.banned ? 'banned' : 'not-banned', inline: true });
-					}
-				}
-				msg.edit({ embeds: [updatedMsg] });
-			}
-			catch (error) {
-				console.error(__filename, new Date(), error);
-			}
+			this.newMemberEvent(member.id, member.guild.id);
 		});
+	}
+
+	async newMemberEvent(memberId, guildId) {
+		if (DEBUG_LOGS) console.log(__filename, new Date(), '+ member', memberId);
+
+		try {
+			const discordData = await discord_join(memberId);
+			const discordChannelId = await getChannel(guildId);
+			// No channelId set so no messages
+			if (typeof discordChannelId != 'string') return;
+			const channel = await this.client.channels.fetch(discordChannelId);
+			if (!channel) return;
+			// Send message in discord channel
+			const embedMsg = new EmbedBuilder()
+				.setColor(0x0099FF)
+				.setDescription(`<@${memberId}>`)
+				// There can be up to 25 fields //
+				.addFields(
+					{ name: 'Discord UID', value: String(memberId), inline: true },
+					{ name: 'Player UID', value: String(discordData.player_uid), inline: true },
+				);
+			const msg = await channel.send({ embeds: [embedMsg] });
+			if (discordData.id < 0) return;
+
+			const alts = await alt_accounts(discordData.id);
+			if (alts < 0) return;
+
+			const updatedMsg = embedMsg.addFields({ name: 'Alt-Accounts', value: String(alts.length), inline: true });
+			if (alts.length > 0) {
+				updatedMsg.addFields({ name: '\u200B', value: '\u200B' });
+				const accounts = alts.length > 19 ? 19 : alts.length;
+				for (let index = 0; index < accounts; index++) {
+					const acc_info = await check_if_banned(alts[index].player_uid);
+					updatedMsg.addFields({ name: String(alts[index].name), value: acc_info.banned ? 'banned' : 'not-banned', inline: true });
+				}
+			}
+			msg.edit({ embeds: [updatedMsg] });
+		}
+		catch (error) {
+			console.error(__filename, new Date(), error);
+		}
 	}
 }
 // ///////////////////

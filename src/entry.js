@@ -5,6 +5,7 @@ const BAN_BOT = new BOT();
 console.log(__filename, new Date(), '... Attempt to run bot ....');
 BAN_BOT.run()
 	.then(console.log(__filename, new Date(), '.... Successfully started'))
+	// .then(BAN_BOT.newMemberEvent('1006697957317419018', '667148022639230985'))
 	.catch(error => {throw error;});
 
 // Commands
