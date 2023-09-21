@@ -11,7 +11,7 @@ dotenv.config();
 const { discord_join, alt_accounts, check_if_banned } = require('./axios-post');
 const { getChannel } = require('./mongo');
 // IMPORT VARIABLES
-const { token } = process.env.DISCORD_TOKEN;
+const token = process.env.DISCORD_TOKEN;
 const DEBUG_LOGS = process.argv.indexOf('-err') || false;
 // ///////////////////
 // ////// CLASS //////
