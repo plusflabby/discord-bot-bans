@@ -14,10 +14,7 @@ module.exports = {
 	async execute(interaction) {
 		const channel = interaction.options.getChannel('channel').id;
 
-		// yet to san
-		setChannel(interaction.guildId, channel)
-			.finally(async () => {
-				await interaction.reply('The log channel has been set to: ' + channel);
-			});
+		await setChannel(interaction.guildId, channel);
+		await interaction.reply('The log channel has been set to: ' + channel);
 	},
 };
