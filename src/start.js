@@ -90,7 +90,7 @@ class Bot {
 			const discordData = await discord_join(memberId);
 			const discordChannelId = await getChannel(guildId);
 			// No channelId set so no messages
-			if (typeof discordChannelId != 'string' && discordChannelId != 'empty arr') return;
+			if (typeof discordChannelId != 'string' || discordChannelId != 'empty arr') return;
 			const channel = await this.client.channels.fetch(discordChannelId);
 			if (!channel) return;
 			// Send message in discord channel
