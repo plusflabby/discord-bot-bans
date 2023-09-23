@@ -14,6 +14,7 @@ class MONGO {
 		if (this.connected) return true;
 		await this.client.connect();
 		this.collection = this.client.db(this.databaseName).collection('channels');
+		this.connected = true;
 		return true;
 	}
 
