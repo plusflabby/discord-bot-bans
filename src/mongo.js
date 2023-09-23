@@ -8,12 +8,12 @@ class MONGO {
 
 	constructor() {
 		this.client = new MongoClient(process.env.MONGODB_URL);
-		this.collection = this.client.db(this.databaseName).collection('channels');
 	}
 
 	async connect() {
 		if (this.connected) return true;
 		await this.client.connect();
+		this.collection = this.client.db(this.databaseName).collection('channels');
 		return true;
 	}
 
