@@ -114,7 +114,7 @@ class Bot {
 				const accounts = alts.length > 19 ? 19 : alts.length;
 				for (let index = 0; index < accounts; index++) {
 					const acc_info = await check_if_banned(alts[index].player_uid);
-					updatedMsg.addFields({ name: String(alts[index].name), value: acc_info.banned ? 'banned' : 'not-banned', inline: true });
+					updatedMsg.addFields({ name: String(alts[index].name), value: acc_info.banned ? 'banned' : 'allowed', inline: true });
 				}
 			}
 			msg.edit({ embeds: [updatedMsg] });
