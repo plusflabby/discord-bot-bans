@@ -6,7 +6,7 @@ async function postReq(identifiers) {
 		apikey: process.env.apikey,
 		identifiers,
 	});
-	if (process.argv.indexOf('-err') > -1) console.log(__filename, new Date(), `--- API request for id: ${identifiers[0].value} took ${parseFloat((new Date() - req_start) / 1000)}ms ---`);
+	if (process.argv.indexOf('-err') > -1) console.log(__filename, new Date(), `--- API request took ${parseFloat((new Date() - req_start) / 1000)}s ---`);
 
 	if (req.status != 200) throw 'Request to api failed';
 	if (typeof req.data != 'object') throw 'API response failed to return object';
@@ -18,7 +18,7 @@ async function postReq(identifiers) {
 async function getReq(identifier) {
 	const req_start = new Date();
 	const req = await axios.get(`https:/fini.dev/api/v2/ban?uid=${identifier}&apikey=${process.env.apikey}`);
-	if (process.argv.indexOf('-err') > -1) console.log(__filename, new Date(), `--- API request for id: ${identifier} took ${parseFloat((new Date() - req_start) / 1000)}ms ---`);
+	if (process.argv.indexOf('-err') > -1) console.log(__filename, new Date(), `--- API request took ${parseFloat((new Date() - req_start) / 1000)}s ---`);
 
 	if (req.status != 200) throw 'Request to api failed';
 	if (typeof req.data != 'object') throw 'API response failed to return object';

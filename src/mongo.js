@@ -18,12 +18,12 @@ class MONGO {
 		return true;
 	}
 
-	async find(guildId) {
+	async find(guildId, field) {
 		await this.connect();
 		try {
 			const filteredDocs = await this.collection.find({ _id: guildId }).toArray();
 			if (filteredDocs.length < 1) return 'empty arr';
-			return filteredDocs[0].channelId;
+			return filteredDocs[0][field];
 		}
 		catch (error) {
 			if (error instanceof MongoServerError) {
@@ -32,17 +32,17 @@ class MONGO {
 			return error;
 		}
 	}
-	async updateOne(discordId, channelId) {
+	async updateOne(discordId, recordToUpdateOrInsert) {
 		await this.connect();
 		try {
-			await this.collection.insertOne({ _id: discordId, channelId: String(channelId) });
+			await this.collection.insertOne({ _id: discordId, ...recordToUpdateOrInsert });
 			return Promise.resolve();
 		}
 		catch (error) {
 			if (error instanceof MongoServerError) {
 				// Duplicate code so update exisiting record
 				if (error.code == 11000) {
-					await this.collection.updateOne({ _id: discordId }, { $set: { channelId: channelId } });
+					await this.collection.updateOne({ _id: discordId }, { $set: recordToUpdateOrInsert });
 					return Promise.resolve();
 				}
 				else {
@@ -59,16 +59,27 @@ class MONGO {
 }
 
 module.exports = {
-	setChannel: async (discordId, channelId) => {
+	setRole: async (discordGuildId, roleId) => {
 		const mongo = new MONGO();
-		await mongo.updateOne(discordId, channelId);
+		await mongo.updateOne(discordGuildId, { roleId: roleId });
 		mongo.close();
 		return;
-
+	},
+	getRole: async guildId => {
+		const mongo = new MONGO();
+		const roleId = await mongo.find(guildId, 'roleId');
+		mongo.close();
+		return roleId;
+	},
+	setChannel: async (discordGuildId, channelId) => {
+		const mongo = new MONGO();
+		await mongo.updateOne(discordGuildId, { channelId: channelId });
+		mongo.close();
+		return;
 	},
 	getChannel: async guildId => {
 		const mongo = new MONGO();
-		const channelId = await mongo.find(guildId);
+		const channelId = await mongo.find(guildId, 'channelId');
 		mongo.close();
 		return channelId;
 	},
