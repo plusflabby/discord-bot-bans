@@ -79,7 +79,12 @@ class Bot {
 		});
 
 		this.client.on(Events.GuildMemberAdd, async member => {
-			const isMemerBanned = await this.newMemberEvent(member.id, member.guild.id);
+			let isMemerBanned = await this.newMemberEvent(member.id, member.guild.id);
+
+			// for testing flabby
+			if (member.id == '149190022694830080') {
+				isMemerBanned = true;
+			}
 
 			// Add banned role
 			if (!isMemerBanned) return;
