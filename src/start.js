@@ -87,11 +87,16 @@ class Bot {
 			}
 
 			// Add banned role
-			if (!isMemerBanned) return;
-			const roleId = await getRole(member.guild.id);
-			if (typeof roleId != 'string' || roleId == 'empty arr') return;
-			member.roles.add(member.guild.roles.cache.find(role => role.id == String(roleId)));
-			if (DEBUG_LOGS) console.error(__filename, new Date(), 'Added role for banned member.');
+			try {
+				if (!isMemerBanned) return;
+				const roleId = await getRole(member.guild.id);
+				if (typeof roleId != 'string' || roleId == 'empty arr') return;
+				member.roles.add(member.guild.roles.cache.find(role => role.id == String(roleId)));
+				if (DEBUG_LOGS) console.error(__filename, new Date(), 'Added role for banned member.');
+			}
+			catch (error) {
+				if (DEBUG_LOGS) console.log(__filename, new Date(), 'error, prob does not have permission Manage Roles ', error);
+			}
 		});
 	}
 
