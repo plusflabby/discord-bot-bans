@@ -1,7 +1,6 @@
 version: '3.1'
 
 services:
-
   mongo:
     image: mongo
     restart: always
@@ -12,18 +11,14 @@ services:
       - 27017:27017
     volumes:
       - dbdata7:/data/db
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: Mn1247vL6wqqGzCVO08530VgLJNHdAYt
-      ME_CONFIG_MONGODB_URL: mongodb://root:Mn1247vL6wqqGzCVO08530VgLJNHdAYt@mongo/
-      ME_CONFIG_BASICAUTH_USERNAME: flabby
-      ME_CONFIG_BASICAUTH_PASSWORD: m%KC=P03#8{W
+  bot:
+    depends_on:
+      - mongo
+    env_file:
+      - .env
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
 
 volumes:
   dbdata7:
