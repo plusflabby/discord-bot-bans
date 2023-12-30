@@ -6,7 +6,7 @@
     "start": "node src/entry.js",
     "prod": "node src/entry.js -err",
     "cmds": "node src/deploy-commands.js",
-    "test": "node test/all.js"
+    "testin": "node test/all.js"
   },
   "author": "flabby",
   "dependencies": {
