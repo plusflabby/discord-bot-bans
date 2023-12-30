@@ -1,0 +1,28 @@
+# This will test the bot
+
+name: Manual test
+
+on:
+    workflow_dispatch: 
+        inputs:
+            node_version:
+                description: 'Select a version to test on'
+                default: '18.15.0'
+                required: true
+                type: string
+jobs:
+    test_mac:
+        runs-on: macos-latest
+
+        steps:
+        - run: echo "Testing macos on node v${{ inputs.node_version }}"
+    test_windows:
+        runs-on: windows-latest
+
+        steps:
+        - run: echo "Testing windows on node v${{ inputs.node_version }}"
+    test_ubuntu:
+        runs-on: ubuntu-latest
+
+        steps:
+        - run: echo "Testing ubuntu on node v${{ inputs.node_version }}"
