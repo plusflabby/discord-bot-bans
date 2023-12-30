@@ -5,14 +5,16 @@
   "scripts": {
     "start": "node src/entry.js",
     "prod": "node src/entry.js -err",
-    "cmds": "node src/deploy-commands.js"
+    "cmds": "node src/deploy-commands.js",
+    "test": "node test/all.js"
   },
   "author": "flabby",
   "dependencies": {
     "axios": "^1.5.0",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
-    "mongodb": "^6.0.0"
+    "mongodb": "^6.0.0",
+    "discord-interactions": "3.4.0"
   },
   "devDependencies": {
     "eslint": "^8.49.0"
