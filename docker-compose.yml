@@ -1,24 +1,9 @@
 version: '3.1'
 
 services:
-  mongo:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: Mn1247vL6wqqGzCVO08530VgLJNHdAYt
-    ports:
-      - 27017:27017
-    volumes:
-      - dbdata7:/data/db
   bot:
-    depends_on:
-      - mongo
     env_file:
       - .env
     build:
       context: ./bot
       dockerfile: Dockerfile
-
-volumes:
-  dbdata7:
