@@ -1,25 +1,15 @@
-//! Test fini.ac api response / flabby's "fivem identity"
+export class API {
+    static #version = 2;
+    static #https = true;
+    static #base = String('://fini.dev/api');
 
-class api {
-    url;
-    //body;
+    static async online() {
+        var url = String(`${API.#https ? 'https' : 'http'}${API.#base}/${API.#version}`);
+        var test = await fetch(url);
+        console.log(this.name, 111, test.statusText);
+        console.log(this.name, 222, test.statusText.toString() === String('Forbidden'));
+        return test.statusText.toString() === String('Forbidden');
+    }
+}
 
-    constructor(
-        params,
-        //body
-    ){
-        this.url = `https:/fini.dev/api/v2${params}&apikey=${process.env.apikey}`;
-        //this.body = body.toString();
-    };
-};
-
-const make = new api(
-    '/identities/match?uid=1029384765',
-    //Object.create()
-);
-
-const request_api = await fetch(URL.createObjectURL(make.url));
-
-const response_match_this; //! Fill in !//
-
-return request_api === response_match_this;
+//API.online();
