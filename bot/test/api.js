@@ -1,4 +1,4 @@
-export class API {
+export default class API {
     static #version = 2;
     static #https = true;
     static #base = String('://fini.dev/api');
@@ -11,5 +11,3 @@ export class API {
         return test.statusText.toString() === String('Forbidden');
     }
 }
-
-//API.online();
