@@ -1,4 +1,4 @@
-export default class API {
+module.exports = class API {
     static #version = 2;
     static #https = true;
     static #base = String('://fini.dev/api');

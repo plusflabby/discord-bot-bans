@@ -3,4 +3,4 @@
 // !
 
 const API = require('./api.js');
-console.log(String('API :: online ?? ===') + String(await API.online()));
+API.online().then(console.log);
