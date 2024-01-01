@@ -3,11 +3,31 @@ module.exports = class API {
     static #https = true;
     static #base = String('://fini.dev/api');
 
+    static #URL = () => {
+        return String(`${API.#https ? 'https' : 'http'}${API.#base}/${API.#version}`);
+    }
+
     static async online() {
-        var url = String(`${API.#https ? 'https' : 'http'}${API.#base}/${API.#version}`);
-        var test = await fetch(url);
-        console.log(this.name, 111, test.statusText);
-        console.log(this.name, 222, test.statusText.toString() === String('Forbidden'));
-        return test.statusText.toString() === String('Forbidden');
+        var test = await fetch(this.#URL);
+        return String('API :: online() ?? ') + String(test.statusText.toString() === String('Forbidden'));
+    }
+
+    static async indentities() {
+        var req = await fetch(
+            `${this.#URL}/identities/match`,
+            {
+                method: 'POST',
+                body: {
+                    "apikey": process.env.apikey,
+                    "identifiers": [
+                        {
+                            "type": "discord",
+                            "value": "149190022694830080"
+                        }
+                    ]
+                }
+            }
+        )
+        return String('API :: indentities() ?? ') + String(req.statusText.toString() + String(req.body));
     }
 }
