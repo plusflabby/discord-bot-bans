@@ -8,13 +8,13 @@ module.exports = class API {
     }
 
     static async online() {
-        var test = await fetch(this.#URL);
+        var test = await fetch(this.#URL());
         return String('API :: online() ?? ') + String(test.statusText.toString() === String('Forbidden'));
     }
 
     static async indentities() {
         var req = await fetch(
-            `${this.#URL}/identities/match`,
+            `${this.#URL()}/identities/match`,
             {
                 method: 'POST',
                 body: {
