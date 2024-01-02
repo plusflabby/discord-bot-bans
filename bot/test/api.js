@@ -28,6 +28,8 @@ module.exports = class API {
                 }
             }
         )
+        console.log(JSON.parse(req.body))
+        console.log(JSON.parse(req.body)['success'])
         return String('API :: indentities() ?? ') + String(req.statusText.toString() + String(req.body));
     }
 }
