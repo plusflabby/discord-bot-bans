@@ -4,7 +4,7 @@ module.exports = class API {
     static #base = String('://fini.dev/api');
 
     static #URL = () => {
-        return String(`${API.#https ? 'https' : 'http'}${API.#base}/${API.#version}`);
+        return String(`${API.#https ? 'https' : 'http'}${API.#base}/v${API.#version}`);
     }
 
     static async online() {
