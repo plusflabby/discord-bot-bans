@@ -18,7 +18,7 @@ module.exports = class API {
             {
                 method: 'POST',
                 body: {
-                    "apikey": process.argv.apikey,
+                    "apikey": process.argv[process.argv.indexOf('apikey')--],
                     "identifiers": [
                         {
                             "type": "discord",
