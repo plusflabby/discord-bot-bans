@@ -17,7 +17,10 @@ module.exports = class API {
             `${this.#URL()}/identities/match`,
             {
                 method: 'POST',
-                body: {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
                     "apikey": String(process.argv[2]).split('=')[1],
                     "identifiers": [
                         {
@@ -25,7 +28,7 @@ module.exports = class API {
                             "value": "149190022694830080"
                         }
                     ]
-                }
+                })
             }
         ).then(res => res.json())
         console.log(req)
