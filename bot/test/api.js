@@ -27,11 +27,9 @@ module.exports = class API {
                     ]
                 }
             }
-        )
-        console.log(req.body.toString())
-        console.log(JSON.parse(req.body.toString()))
-        console.log(JSON.parse(req.body))
-        console.log(req.jsobodyn['success'])
-        return String('API :: indentities() ?? ') + String(req.statusText.toString() + String(req.body));
+        ).then(res => res.json())
+        console.log(req)
+        console.log(req['success'])
+        return String('API :: indentities() ?? ') + String(req.statusText.toString() + String(req));
     }
 }
